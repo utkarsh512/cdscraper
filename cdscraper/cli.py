@@ -52,7 +52,7 @@ def main():
     """
     args = options()
     with open(args.input, 'r', encoding='utf-8') as f:
-        usernames = f.read().split()
+        usernames = [user.strip() for user in f.readlines()]
     results = run(usernames)
     with open(args.output, 'w', encoding='utf-8') as f:
         f.write(json.dumps(results, indent=4))
