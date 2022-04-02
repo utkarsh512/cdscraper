@@ -43,7 +43,6 @@ def run(usernames, filename):
                     if res is not None:
                         f.write(json.dumps(res) + '\n')
                     pbar.update(1)
-        return results
 
 
 def main():
