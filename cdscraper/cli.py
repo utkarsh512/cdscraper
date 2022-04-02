@@ -26,24 +26,24 @@ def options():
     return args
 
 
-def run(usernames):
+def run(usernames, filename):
     """
     Run the profile scraper concurrently
     """
-    threads = min(MAX_THREADS, len(usernames))
-    length = len(usernames)
+    with open(filename, 'w', encoding='utf-8') as f:
+        threads = min(MAX_THREADS, len(usernames))
+        length = len(usernames)
 
-    with tqdm(total=length) as pbar:
-        with concurrent.futures.ProcessPoolExecutor(max_workers=threads) as executor:
-            futures = {executor.submit(profile.get_profile, arg): arg for arg in usernames}
-            results = []
-            for future in concurrent.futures.as_completed(futures):
-                arg = futures[future]
-                res = future.result()
-                if res is not None:
-                    results.append(res)
-                pbar.update(1)
-    return results
+        with tqdm(total=length) as pbar:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=threads) as executor:
+                futures = {executor.submit(profile.get_profile, arg): arg for arg in usernames}
+                for future in concurrent.futures.as_completed(futures):
+                    arg = futures[future]
+                    res = future.result()
+                    if res is not None:
+                        f.write(json.dumps(res) + '\n')
+                    pbar.update(1)
+        return results
 
 
 def main():
@@ -53,9 +53,7 @@ def main():
     args = options()
     with open(args.input, 'r', encoding='utf-8') as f:
         usernames = [user.strip() for user in f.readlines()]
-    results = run(usernames)
-    with open(args.output, 'w', encoding='utf-8') as f:
-        f.write(json.dumps(results, indent=4))
+    results = run(usernames, args.output)
 
 
 def run_as_command():
