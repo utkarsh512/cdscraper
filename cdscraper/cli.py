@@ -35,7 +35,7 @@ def run(usernames, filename):
         length = len(usernames)
 
         with tqdm(total=length) as pbar:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=threads) as executor:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
                 futures = {executor.submit(profile.get_profile, arg): arg for arg in usernames}
                 for future in concurrent.futures.as_completed(futures):
                     arg = futures[future]
