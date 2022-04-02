@@ -39,7 +39,9 @@ def run(usernames):
             results = []
             for future in concurrent.futures.as_completed(futures):
                 arg = futures[future]
-                results.append(future.result())
+                res = future.result()
+                if res is not None:
+                    results.append(res)
                 pbar.update(1)
     return results
 
